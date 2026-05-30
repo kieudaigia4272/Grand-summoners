@@ -143,57 +143,47 @@ else
 end
 function a1()
 
-    local patch = {}
+    -- 1. Tìm kiếm giá trị 1300901660
+gg.clearResults()
+gg.searchNumber("1300901660", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
-    -- SEARCH 1
+-- Lấy danh sách kết quả (tối đa 30 theo yêu cầu)
+local count = gg.getResultsCount()
+if count == 0 then
+    gg.alert("Không tìm thấy giá trị!")
+    os.exit()
+end
+local results = gg.getResults(30)
 
-    gg.searchNumber("2500", gg.TYPE_FLOAT)
+-- Chuẩn bị danh sách set giá trị (tối ưu hơn việc set từng cái một)
+local toEdit = {}
 
-    local r1 = gg.getResults(300)
-
-    for i = 1, #r1 do
-
-        patch[#patch + 1] = {
-            address = r1[i].address - 60,
-            flags = gg.TYPE_FLOAT,
-            value = 300
-        }
-
-        patch[#patch + 1] = {
-            address = r1[i].address - 68,
-            flags = gg.TYPE_FLOAT,
-            value = 80
-        }
+-- 2. Kiểm tra điều kiện offset
+for i = 1, #results do
+    local addr = results[i].address
+    
+    -- Đọc giá trị tại offset -48 và -52 (Float)
+    local val48 = gg.getValues({{address = addr - 48, flags = gg.TYPE_FLOAT}})[1].value
+    local val52 = gg.getValues({{address = addr - 52, flags = gg.TYPE_FLOAT}})[1].value
+    
+    -- Kiểm tra nếu bằng 1
+    if val48 == 1 and val52 == 1 then
+        -- 3. Đưa vào danh sách cần ghi (không set ngay để tránh lag)
+        table.insert(toEdit, {address = addr - 48, flags = gg.TYPE_FLOAT, value = 80})
+        table.insert(toEdit, {address = addr - 52, flags = gg.TYPE_FLOAT, value = 80})
+        table.insert(toEdit, {address = addr - 40, flags = gg.TYPE_FLOAT, value = 300})
     end
+end
 
-    clear()
+-- Thực hiện ghi dữ liệu một lần duy nhất
+if #toEdit > 0 then
+    gg.setValues(toEdit)
+    gg.toast("Boosted 🔥 " .. (#toEdit / 3) .. " unit!")
+else
+    gg.toast("Error value code function boost")
+end
 
-    -- SEARCH 2
-
-    gg.searchNumber("2000;5D", gg.TYPE_FLOAT)
-
-    gg.refineNumber("2000", gg.TYPE_FLOAT)
-
-    local r2 = gg.getResults(300)
-
-    for i = 1, #r2 do
-
-        patch[#patch + 1] = {
-            address = r2[i].address - 60,
-            flags = gg.TYPE_FLOAT,
-            value = 300
-        }
-
-        patch[#patch + 1] = {
-            address = r2[i].address - 68,
-            flags = gg.TYPE_FLOAT,
-            value = 80
-        }
-    end
-
-    batchWrite(patch)
-
-    gg.toast("Boosted 🔥")
+gg.clearResults()
 end
 
 -- =========================================
