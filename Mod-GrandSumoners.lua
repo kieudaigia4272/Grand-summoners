@@ -114,7 +114,33 @@ end
 -- =========================================
 -- FUNCTION 1
 -- =========================================
+function settime()
+-- 1. Tìm kiếm và lọc ngay kết quả đầu tiên
+gg.clearResults()
+gg.searchNumber("4784174;6881280;433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
+gg.searchNumber("433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
+-- Lấy trực tiếp kết quả đầu tiên (index 1)
+local res = gg.getResults(1)[1]
+
+if res then
+    -- 2. Tính địa chỉ offset trực tiếp
+    local targetAddr = res.address - 40
+    
+    -- 3. Đọc giá trị tại địa chỉ đó (Float)
+    local val = gg.getValues({{address = targetAddr, flags = gg.TYPE_FLOAT}})[1]
+    
+    -- 4. Set giá trị mới cộng thêm 90
+    val.value = val.value + 90
+    gg.setValues({val})
+    
+    gg.clearResults()
+    gg.toast("The World had changed")
+else
+    gg.alert("Not found value time")
+    end
+    
+end
 function a1()
 
     local patch = {}
@@ -176,10 +202,7 @@ end
 
 function a2()
 clear()
-gg.searchNumber("4784174;6881280;1F~30F;433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1, 0)
-gg.refineNumber("1~30F", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1, 0)
-revert = gg.getResults(100, nil, nil, nil, nil, nil, nil, nil, nil)
-gg.editAll("61.52794909477", gg.TYPE_FLOAT)
+settime()
     gg.searchNumber(
         "65793;65536;1~4D;16842752;-1;-1:512",
         gg.TYPE_DWORD
