@@ -175,15 +175,17 @@ end
 -- =========================================
 
 function a2()
-
-    clear()
-
+clear()
+gg.searchNumber("4784174;6881280;0F~30F;433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1, 0)
+gg.refineNumber("0~30F", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1, 0)
+revert = gg.getResults(1000, nil, nil, nil, nil, nil, nil, nil, nil)
+gg.editAll("61.52794909477", gg.TYPE_FLOAT)
     gg.searchNumber(
-        "65793;65536;1~3D;16842752;-1;-1:512",
+        "65793;65536;1~4D;16842752;-1;-1:512",
         gg.TYPE_DWORD
     )
 
-    gg.refineNumber("1~3", gg.TYPE_DWORD)
+    gg.refineNumber("1~4", gg.TYPE_DWORD)
 
     local r = gg.getResults(1000)
 
