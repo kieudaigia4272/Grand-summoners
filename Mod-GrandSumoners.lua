@@ -131,7 +131,7 @@ if res then
     local val = gg.getValues({{address = targetAddr, flags = gg.TYPE_FLOAT}})[1]
     
     -- 4. Set giá trị mới cộng thêm 90
-    val.value = val.value + 90
+    val.value = val.value + 63
     gg.setValues({val})
     
     gg.clearResults()
