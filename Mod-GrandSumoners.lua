@@ -219,69 +219,40 @@ end
 -- =========================================
 
 function a3()
+clear()
+    -- 1. Tìm kiếm giá trị
+gg.searchNumber("-1850219005", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
-    clear()
+local count = gg.getResultsCount()
+if count == 0 then
+    gg.toast("Mobs not found")
+    os.exit()
+end
 
-    gg.searchNumber(
-        "-1850219005D;289792896F::9",
-        gg.TYPE_DWORD | gg.TYPE_FLOAT
-    )
+local results = gg.getResults(20)
+local edits = {}
 
-    gg.refineNumber("-1850219005", gg.TYPE_DWORD)
-
-    local results = gg.getResults(100)
-
-    if #results == 0 then
-        gg.toast("No Boss Found")
-        return
+-- 2. Kiểm tra offset -8 (Double > 20000)
+for i = 1, #results do
+    local addr = results[i].address
+    local valDouble = gg.getValues({{address = addr - 8, flags = gg.TYPE_DOUBLE}})[1].value
+    
+    if valDouble > 20000 then
+        -- 3. Đưa vào danh sách ghi
+        -- Offset -8 thành -2000 (Double)
+        table.insert(edits, {address = addr - 8, flags = gg.TYPE_DOUBLE, value = 100000})
+        -- Offset +24 thành -2000 (Float)
+        table.insert(edits, {address = addr + 24, flags = gg.TYPE_FLOAT, value = -2000})
     end
+end
 
-    local readTbl = {}
-    local anchorMap = {}
-
-    for i = 1, #results do
-
-        local anchor = results[i].address
-        local hpAddr = anchor - 8
-
-        readTbl[#readTbl + 1] = {
-            address = hpAddr,
-            flags = gg.TYPE_DOUBLE
-        }
-
-        anchorMap[hpAddr] = anchor
+-- Thực hiện ghi một lần duy nhất
+if #edits > 0 then
+    gg.setValues(edits)
+    gg.toast("Mobs break: " .. (#edits / 2))
+else
+    gg.toast("Not found value func 3")
     end
-
-    local hpValues = gg.getValues(readTbl)
-
-    local patch = {}
-
-    for i = 1, #hpValues do
-
-        local hp = tonumber(hpValues[i].value)
-
-        if hp and hp > 30000 and hp < 999999999 then
-
-            local anchor = anchorMap[hpValues[i].address]
-
-            patch[#patch + 1] = {
-                address = hpValues[i].address,
-                flags = gg.TYPE_DOUBLE,
-                value = 120000
-            }
-
-            patch[#patch + 1] = {
-                address = anchor + 24,
-                flags = gg.TYPE_FLOAT,
-                value = -1000
-            }
-        end
-    end
-
-    batchWrite(patch)
-
-    gg.toast("Bể cái mu nè ⛏️")
-
     clear()
 end
 
@@ -290,67 +261,40 @@ end
 -- =========================================
 
 function a4()
+clear()
+    -- 1. Tìm kiếm giá trị
+gg.searchNumber("-1850219005", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
-    clear()
+local count = gg.getResultsCount()
+if count == 0 then
+    gg.toast("Không tìm thấy giá trị!")
+    os.exit()
+end
 
-    gg.searchNumber(
-        "-1850219005D;289792896F::9",
-        gg.TYPE_DWORD | gg.TYPE_FLOAT
-    )
+local results = gg.getResults(20)
+local edits = {}
 
-    gg.refineNumber("-1850219005", gg.TYPE_DWORD)
-
-    local results = gg.getResults(100)
-
-    if #results == 0 then
-        gg.toast("No Boss Found")
-        return
+-- 2. Kiểm tra offset -8 (Double > 20000)
+for i = 1, #results do
+    local addr = results[i].address
+    local valDouble = gg.getValues({{address = addr - 8, flags = gg.TYPE_DOUBLE}})[1].value
+    
+    if valDouble > 20000 then
+        -- 3. Đưa vào danh sách ghi
+        -- Offset -8 thành -2000 (Double)
+        table.insert(edits, {address = addr - 8, flags = gg.TYPE_DOUBLE, value = -2000})
+        -- Offset +24 thành -2000 (Float)
+        table.insert(edits, {address = addr + 24, flags = gg.TYPE_FLOAT, value = -2000})
     end
+end
 
-    local readTbl = {}
-    local shieldMap = {}
-
-    for i = 1, #results do
-
-        local anchor = results[i].address
-        local hpAddr = anchor - 8
-
-        readTbl[#readTbl + 1] = {
-            address = hpAddr,
-            flags = gg.TYPE_DOUBLE
-        }
-
-        shieldMap[hpAddr] = anchor + 24
+-- Thực hiện ghi một lần duy nhất
+if #edits > 0 then
+    gg.setValues(edits)
+    gg.toast("Mobs killed: " .. (#edits / 2))
+else
+    gg.toast("Not found value func 4")
     end
-
-    local hpValues = gg.getValues(readTbl)
-
-    local patch = {}
-
-    for i = 1, #hpValues do
-
-        local hp = tonumber(hpValues[i].value)
-
-        if hp and hp > 30000 and hp < 999999999 then
-
-            patch[#patch + 1] = {
-                address = hpValues[i].address,
-                flags = gg.TYPE_DOUBLE,
-                value = -1009
-            }
-
-            patch[#patch + 1] = {
-                address = shieldMap[hpValues[i].address],
-                flags = gg.TYPE_FLOAT,
-                value = -1000
-            }
-        end
-    end
-
-    batchWrite(patch)
-
-    gg.toast("Allahu Akbar ✈🏢🏢 !")
-
     clear()
 end
 
