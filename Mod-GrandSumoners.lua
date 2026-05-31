@@ -115,31 +115,31 @@ end
 -- FUNCTION 1
 -- =========================================
 function settime()
--- 1. Tìm kiếm giá trị
-gg.clearResults()
-gg.searchNumber("433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
+    -- 1. Tìm kiếm giá trị
+    gg.clearResults()
+    gg.searchNumber("433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
--- Lấy danh sách kết quả (tối đa 3)
-local results = gg.getResults(3)
-local count = #results
+    -- Lấy danh sách kết quả (tối đa 3)
+    local results = gg.getResults(3)
+    local count = #results
 
-if count == 0 then
-    gg.toast("Not found value func time")
-else
-    -- 2. Duyệt trực tiếp và set giá trị
-    for i = 1, count do
-        local addr = results[i].address - 40
-        -- Lấy giá trị hiện tại để cộng thêm 62.2
-        local currentVal = gg.getValues({{address = addr, flags = gg.TYPE_FLOAT}})[1].value
-        
-        -- Set trực tiếp giá trị mới vào bộ nhớ
-        gg.setValue(addr, currentVal + 62, gg.TYPE_FLOAT)
+    if count == 0 then
+        gg.toast("Not found value func time")
+    else
+        -- 2. Duyệt trực tiếp và set giá trị
+        for i = 1, count do
+            local addr = results[i].address - 40
+            
+            -- Lấy giá trị hiện tại để cộng thêm 62.2
+            local currentVal = gg.getValues({{address = addr, flags = gg.TYPE_FLOAT}})[1].value
+            
+            -- Set giá trị bằng gg.setValues (phải dùng bảng)
+            gg.setValues({{address = addr, flags = gg.TYPE_FLOAT, value = currentVal + 62}})
+        end
+        gg.toast("The World had changed")
     end
-    gg.toast("The World had changed")
-end
 
-gg.clearResults()
-    
+    gg.clearResults()
 end
 
 function a1()
