@@ -115,32 +115,33 @@ end
 -- FUNCTION 1
 -- =========================================
 function settime()
--- 1. Tìm kiếm và lọc ngay kết quả đầu tiên
+-- 1. Tìm kiếm giá trị
 gg.clearResults()
-gg.searchNumber("4784174;6881280;433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 gg.searchNumber("433513380", gg.TYPE_DWORD, false, gg.SIGN_EQUAL, 0, -1)
 
--- Lấy trực tiếp kết quả đầu tiên (index 1)
-local res = gg.getResults(1)[1]
+-- Lấy danh sách kết quả (tối đa 3)
+local results = gg.getResults(3)
+local count = #results
 
-if res then
-    -- 2. Tính địa chỉ offset trực tiếp
-    local targetAddr = res.address - 40
-    
-    -- 3. Đọc giá trị tại địa chỉ đó (Float)
-    local val = gg.getValues({{address = targetAddr, flags = gg.TYPE_FLOAT}})[1]
-    
-    -- 4. Set giá trị mới cộng thêm 90
-    val.value = val.value + 63
-    gg.setValues({val})
-    
-    gg.clearResults()
-    gg.toast("The World had changed")
+if count == 0 then
+    gg.toast("Not found value func time")
 else
-    gg.alert("Not found value time")
+    -- 2. Duyệt trực tiếp và set giá trị
+    for i = 1, count do
+        local addr = results[i].address - 40
+        -- Lấy giá trị hiện tại để cộng thêm 62.2
+        local currentVal = gg.getValues({{address = addr, flags = gg.TYPE_FLOAT}})[1].value
+        
+        -- Set trực tiếp giá trị mới vào bộ nhớ
+        gg.setValue(addr, currentVal + 62.2, gg.TYPE_FLOAT)
     end
+    gg.toast("The World had changed")
+end
+
+gg.clearResults()
     
 end
+
 function a1()
 
     -- 1. Tìm kiếm giá trị 1300901660
