@@ -209,7 +209,7 @@ gg.clearResults()
     local found = false
     
     for i = 1, #results do
-        local target_addr = results[i].address - 44
+        local target_addr = results[i].address - 48
         
         -- Đọc trực tiếp giá trị tại offset -44
         local val_data = gg.getValues({{address = target_addr, flags = gg.TYPE_DWORD}})
