@@ -190,38 +190,24 @@ function a2()
 -- =========================
 -- FUNCTION 2 - INSTANT WIN (Tối ưu hóa: Không table, No Freeze, Trực diện)
 -- =========================
+clear()
+    gg.searchNumber(
+        "65793;65536;1~4D;16842752;-1;-1:512",
+        gg.TYPE_DWORD
+    )
 
-gg.clearResults()
+    gg.refineNumber("1~4", gg.TYPE_DWORD)
 
-    -- Bước 1: Search theo dải quy luật
-    gg.searchNumber("65793;65536;1~4D;16842752;-1;-1:512", gg.TYPE_DWORD)
-    gg.refineNumber("16842752", gg.TYPE_DWORD)
-    
-    local count = gg.getResultsCount()
-    if count == 0 then
-        gg.toast("Không tìm thấy cấu trúc Quest!")
-        gg.clearResults()
-        return
-    end
-    
-    -- Bước 2 & 3: Lấy kết quả, check điều kiện 0 < val < 6 và Set trực tiếp
-    local results = gg.getResults(count)
-    local found = false
-    
-    for i = 1, #results do
-        local target_addr = results[i].address - 48
-        
-        -- Đọc trực tiếp giá trị tại offset -44
-        local val_data = gg.getValues({{address = target_addr, flags = gg.TYPE_DWORD}})
-        local val = tonumber(val_data[1].value)
-        
-        -- Điều kiện: > 0 và < 6
-        if val and val > 0 and val < 6 then
-            gg.setValues({{address = target_addr, flags = gg.TYPE_DWORD, value = 6}})
-            found = true
+    local r = gg.getResults(20)
+
+    if #r > 0 then
+
+        for i = 1, #r do
+            r[i].value = 6
         end
-    end    
-    gg.clearResults()
+
+        batchWrite(r)
+    end
     settime()
     a4()
 end
