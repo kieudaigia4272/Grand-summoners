@@ -194,7 +194,7 @@ function a2()
 gg.clearResults()
 
     -- Bước 1: Search theo dải quy luật
-    gg.searchNumber("65793D;65536D;1~3D;16842752D;-1D;-1D", gg.TYPE_DWORD)
+    gg.searchNumber("65793;65536;1~4D;16842752;-1;-1:512", gg.TYPE_DWORD)
     gg.refineNumber("16842752", gg.TYPE_DWORD)
     
     local count = gg.getResultsCount()
