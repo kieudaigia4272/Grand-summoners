@@ -191,30 +191,36 @@ function a2()
 -- FUNCTION 2 - INSTANT WIN (Tối ưu hóa: Không table, No Freeze, Trực diện)
 -- =========================
 
-    gg.clearResults()
-    -- Bước 1: Tìm kiếm theo dải quy luật (giảm limit về 1 vì chỉ cần 1 kết quả)
-    gg.searchNumber("65793D;65536D;1~5D;16842752D;-1D;-1D::512", gg.TYPE_DWORD)
+gg.clearResults()
+
+    -- Bước 1: Search theo dải quy luật
+    gg.searchNumber("65793D;65536D;1~3D;16842752D;-1D;-1D::512", gg.TYPE_DWORD)
     gg.refineNumber("16842752", gg.TYPE_DWORD)
     
     local count = gg.getResultsCount()
-    
     if count == 0 then
         gg.toast("Không tìm thấy cấu trúc Quest!")
         gg.clearResults()
         return
     end
-
-    -- Bước 2: Lấy thẳng địa chỉ đầu tiên (kết quả duy nhất)
-    local results = gg.getResults(1)
-    local target_addr = results[1].address - 44
     
-    -- Bước 3: Ghi đè trực tiếp mà không cần dùng bảng (table) hay đóng băng (freeze)
-    -- Sử dụng trực tiếp mảng edit đơn giản
-    gg.setValues({
-        {address = target_addr, flags = gg.TYPE_DWORD, value = 6}
-    })
+    -- Bước 2 & 3: Lấy kết quả, check điều kiện 0 < val < 6 và Set trực tiếp
+    local results = gg.getResults(count)
+    local found = false
     
-    gg.toast("Đã set Stage lên 6 - Auto Win kích hoạt!")
+    for i = 1, #results do
+        local target_addr = results[i].address - 44
+        
+        -- Đọc trực tiếp giá trị tại offset -44
+        local val_data = gg.getValues({{address = target_addr, flags = gg.TYPE_DWORD}})
+        local val = tonumber(val_data[1].value)
+        
+        -- Điều kiện: > 0 và < 6
+        if val and val > 0 and val < 6 then
+            gg.setValues({{address = target_addr, flags = gg.TYPE_DWORD, value = 6}})
+            found = true
+        end
+    end    
     gg.clearResults()
     settime()
     a4()
