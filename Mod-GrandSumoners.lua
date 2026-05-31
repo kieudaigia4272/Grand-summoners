@@ -136,7 +136,6 @@ function settime()
             -- Set giá trị bằng gg.setValues (phải dùng bảng)
             gg.setValues({{address = addr, flags = gg.TYPE_FLOAT, value = currentVal + 62}})
         end
-        gg.toast("The World had changed")
     end
 
     gg.clearResults()
@@ -193,7 +192,6 @@ end
 
 function a2()
 clear()
-settime()
     gg.searchNumber(
         "65793;65536;1~4D;16842752;-1;-1:512",
         gg.TYPE_DWORD
@@ -211,8 +209,9 @@ settime()
 
         batchWrite(r)
     end
-
+    settime()
     a4()
+    gg.toast("⛩️ Tsukuyomi ⛩️")
 end
 
 -- =========================================
