@@ -186,39 +186,36 @@ end
 gg.clearResults()
 end
 
--- =========================================
--- FUNCTION 2
--- =========================================
-
 function a2()
-clear()
-    -- 1. Tìm giá trị Double
+-- =========================
+-- FUNCTION 2 - INSTANT WIN (Tối ưu hóa: Không table, No Freeze, Trực diện)
+-- =========================
+
     gg.clearResults()
-    gg.searchNumber("5.50703498e-315", gg.TYPE_DOUBLE, false, gg.SIGN_EQUAL, 0, -1)
+    -- Bước 1: Tìm kiếm theo dải quy luật (giảm limit về 1 vì chỉ cần 1 kết quả)
+    gg.searchNumber("65793D;65536D;1~5D;16842752D;-1D;-1D::512", gg.TYPE_DWORD)
+    gg.refineNumber("16842752", gg.TYPE_DWORD)
     
     local count = gg.getResultsCount()
+    
     if count == 0 then
-        gg.toast("Không tìm thấy giá trị!")
+        gg.toast("Không tìm thấy cấu trúc Quest!")
+        gg.clearResults()
         return
     end
 
-    -- Lấy tối đa 15 kết quả
-    local results = gg.getResults(15)
-
-    -- 2. Duyệt qua từng kết quả và kiểm tra
-    for i = 1, #results do
-        local addr = results[i].address
-        local offsetAddr = addr - 260
-        
-        -- Đọc giá trị Dword tại offset -264
-        local val = gg.getValues({{address = offsetAddr, flags = gg.TYPE_DWORD}})[1].value
-        
-        -- Kiểm tra điều kiện 0 < val < 5
-        if val > 0 and val < 5 then
-            -- 3. Set giá trị tại offset đó thành 6 (Dword)
-            gg.setValues({{address = offsetAddr, flags = gg.TYPE_DWORD, value = 6}})
-        end
-    end
+    -- Bước 2: Lấy thẳng địa chỉ đầu tiên (kết quả duy nhất)
+    local results = gg.getResults(1)
+    local target_addr = results[1].address - 44
+    
+    -- Bước 3: Ghi đè trực tiếp mà không cần dùng bảng (table) hay đóng băng (freeze)
+    -- Sử dụng trực tiếp mảng edit đơn giản
+    gg.setValues({
+        {address = target_addr, flags = gg.TYPE_DWORD, value = 6}
+    })
+    
+    gg.toast("Đã set Stage lên 6 - Auto Win kích hoạt!")
+    gg.clearResults()
     settime()
     a4()
 end
