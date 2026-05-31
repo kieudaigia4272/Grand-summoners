@@ -192,22 +192,32 @@ end
 
 function a2()
 clear()
-    gg.searchNumber(
-        "65793;65536;1~4D;16842752;-1;-1:512",
-        gg.TYPE_DWORD
-    )
+    -- 1. Tìm giá trị Double
+    gg.clearResults()
+    gg.searchNumber("5.50703498e-315", gg.TYPE_DOUBLE, false, gg.SIGN_EQUAL, 0, -1)
+    
+    local count = gg.getResultsCount()
+    if count == 0 then
+        gg.toast("Không tìm thấy giá trị!")
+        return
+    end
 
-    gg.refineNumber("1~4", gg.TYPE_DWORD)
+    -- Lấy tối đa 15 kết quả
+    local results = gg.getResults(15)
 
-    local r = gg.getResults(1000)
-
-    if #r > 0 then
-
-        for i = 1, #r do
-            r[i].value = 6
+    -- 2. Duyệt qua từng kết quả và kiểm tra
+    for i = 1, #results do
+        local addr = results[i].address
+        local offsetAddr = addr - 264
+        
+        -- Đọc giá trị Dword tại offset -264
+        local val = gg.getValues({{address = offsetAddr, flags = gg.TYPE_DWORD}})[1].value
+        
+        -- Kiểm tra điều kiện 0 < val < 5
+        if val > 0 and val < 5 then
+            -- 3. Set giá trị tại offset đó thành 6 (Dword)
+            gg.setValues({{address = offsetAddr, flags = gg.TYPE_DWORD, value = 6}})
         end
-
-        batchWrite(r)
     end
     settime()
     a4()
