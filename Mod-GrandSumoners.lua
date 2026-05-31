@@ -211,7 +211,6 @@ clear()
     end
     settime()
     a4()
-    gg.toast("⛩️ Tsukuyomi ⛩️")
 end
 
 -- =========================================
