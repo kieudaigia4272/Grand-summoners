@@ -133,7 +133,7 @@ else
         local currentVal = gg.getValues({{address = addr, flags = gg.TYPE_FLOAT}})[1].value
         
         -- Set trực tiếp giá trị mới vào bộ nhớ
-        gg.setValue(addr, currentVal + 62.2, gg.TYPE_FLOAT)
+        gg.setValue(addr, currentVal + 62, gg.TYPE_FLOAT)
     end
     gg.toast("The World had changed")
 end
