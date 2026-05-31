@@ -194,7 +194,7 @@ function a2()
 clear()
     -- 1. Tìm giá trị Double
     gg.clearResults()
-    gg.searchNumber("5.50703498e-315", gg.TYPE_DOUBLE, false, gg.SIGN_EQUAL, 0, -1)
+    gg.searchNumber("397706284", gg.TYPE_Xor, false, gg.SIGN_EQUAL, 0, -1)
     
     local count = gg.getResultsCount()
     if count == 0 then
