@@ -496,18 +496,19 @@ gg.setVisible(false)
 XGCK = -1 
 
 -- =========================================
--- MAIN LOOP (TỐI ƯU CẤP ĐỘ GỐC - ZERO BLOCKING)
+-- MAIN LOOP (Tối ưu tương thích - Không dùng hàm lạ)
 -- =========================================
 
-gg.setVisible(false) -- Ẩn GG ngay khi bắt đầu
+gg.setVisible(false) 
 local clickCount = 0
 local lastClickTime = 0
-local timeWindow = 0.35 -- Cửa sổ nhận click cực nhanh
+local timeWindow = 0.4 
 
 while true do
-    -- DÙNG gg.isClicked() THAY VÌ gg.isVisible()
-    -- gg.isClicked() là hàm callback, không gây dừng game (block)
-    if gg.isClicked() then 
+    -- Dùng gg.isVisible(true) - đây là hàm chuẩn nhất, mọi bản GG đều có
+    if gg.isVisible(true) then
+        gg.setVisible(false) -- Ẩn đi ngay lập tức
+        
         local currentTime = os.clock()
         if (currentTime - lastClickTime) < timeWindow then
             clickCount = clickCount + 1
@@ -515,22 +516,20 @@ while true do
             clickCount = 1
         end
         lastClickTime = currentTime
-        
-        -- Chỉ dùng toast khi đã chốt lệnh, không dùng trong lúc đếm
     end
     
-    -- Chốt lệnh logic
+    -- Xử lý logic sau khi đã ghi nhận click
     if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
+        -- Dùng if đơn thuần để tránh lỗi gọi hàm lạ
         if clickCount == 1 then
-            a2() -- Instant Win
+            a2() 
         elseif clickCount == 2 then
-            a4() -- Kill Boss
+            a4() 
         elseif clickCount >= 3 then
-            Main() -- Mở Menu
+            Main()
         end
         clickCount = 0
     end
     
-    -- Tăng sleep lên 100ms để CPU game thở, 30ms là quá thừa thãi gây nóng máy
-    gg.sleep(100) 
+    gg.sleep(150) -- Tăng lên 150ms để chắc chắn không bị treo luồng khi máy quá tải
 end
