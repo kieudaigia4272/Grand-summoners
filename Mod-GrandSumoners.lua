@@ -501,36 +501,33 @@ local lastClickTime = 0
 local timeWindow = 0.6 -- Cửa sổ thời gian chờ giữa các lần click (0.6 giây). Nếu đại ca bấm chậm thì tăng lên 0.8
 
 while true do
-    -- 1. Bắt sự kiện chạm vào icon GG
+    -- Kiểm tra trạng thái icon GG
     if gg.isVisible(true) then
-        gg.setVisible(false) -- Ẩn giao diện đi ngay lập tức để không cản màn hình
-        clickCount = clickCount + 1
-        lastClickTime = os.clock() -- Lưu lại timestamp của lần chạm cuối cùng
-    end
-    
-    -- 2. Kiểm tra bộ đếm (Timeout)
-    -- Nếu đã có click và thời gian trôi qua lớn hơn timeWindow (nghĩa là đã bấm xong)
-    if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
-        
-        -- Phân luồng chức năng dựa trên số lần click
-        if clickCount == 1 then
-            gg.toast("⚡ [1 Click] - Kích hoạt Auto Win!")
-            a2() -- Gọi hàm Instant Win
-            
-        elseif clickCount == 2 then
-            gg.toast("💀 [2 Click] - Kích hoạt Kill Boss!")
-            a4() -- Gọi hàm Kill Boss
-            
-        elseif clickCount >= 3 then
-            gg.toast("🗄️ [3 Click] - Kích hoạt Menu Chính!")
-            Main() -- Bung giao diện Menu tổng
+        gg.setVisible(false) 
+        local currentTime = os.clock()
+        -- Nếu click mới nằm trong khung thời gian 0.4s thì cộng dồn
+        if (currentTime - lastClickTime) < timeWindow then
+            clickCount = clickCount + 1
+        else
+            -- Nếu bấm lỡ nhịp, reset về 1
+            clickCount = 1
         end
-        
-        -- 3. Đặt lại bộ đếm về 0 sau khi thực thi xong gói lệnh
-        clickCount = 0
+        lastClickTime = currentTime
+        -- Phản hồi ngay lập tức qua Toast để đại ca biết máy đã nhận bao nhiêu click
     end
     
-    -- 4. Polling rate (Tần số quét)
-    -- Để 50ms là cực nhạy, bắt trọn từng cú nhấp tay mà không làm ngốn CPU
-    gg.sleep(50)
+    -- Kiểm tra chốt lệnh: Nếu quá 0.4s mà không có click mới, thực thi
+    if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
+        if clickCount == 1 then
+            a2() -- Instant Win
+        elseif clickCount == 2 then
+            a4() -- Kill Boss
+        elseif clickCount >= 3 then
+            Main() -- Mở Menu
+        end
+        clickCount = 0 -- Reset
+    end
+    
+    -- Giảm sleep xuống mức tối thiểu mà CPU vẫn chịu được
+    gg.sleep(30) 
 end
