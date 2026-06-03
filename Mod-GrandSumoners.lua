@@ -480,6 +480,31 @@ function a7()
 end
 
 -- =========================================
+-- HÀM MENU NỔI (KÍCH HOẠT NHANH)
+-- =========================================
+
+function ShowFloatingMenu()
+    local menu = gg.choice({
+        '1. Boost BE + Full Art',
+        '2. instant Win',
+        '3. Kill Boss',
+        '4. 🗄️ Mở Menu Chính (Full Options)',
+        '❌ Đóng'
+    }, nil, '⚡ MENU THAO TÁC NHANH ⚡')
+
+    if menu == 1 then
+        a1()
+    elseif menu == 2 then
+        a2()
+    elseif menu == 3 then
+        a4()
+    elseif menu == 4 then
+        Main()
+    end
+    -- Nếu chọn Đóng (menu == 5) hoặc bấm ra ngoài (menu == nil) thì không làm gì cả, tự thoát
+end
+
+-- =========================================
 -- EXIT
 -- =========================================
 
@@ -488,19 +513,20 @@ function Exit()
 end
 
 -- =========================================
--- MAIN LOOP
+-- MAIN LOOP (Tích hợp Floating Menu)
 -- =========================================
 
+-- Ép ẩn giao diện GG ngay khi vừa load script xong
+gg.setVisible(false)
+XGCK = -1 
+
 while true do
-
+    -- Bắt sự kiện khi đại ca chạm vào icon GG đang trôi nổi
     if gg.isVisible(true) then
-        XGCK = 1
-        gg.setVisible(false)
+        gg.setVisible(false) -- Ẩn UI gốc của GG lập tức
+        ShowFloatingMenu()   -- Bắn popup Menu Nhanh ra giữa màn hình
     end
-
-    if XGCK == 1 then
-        Main()
-    end
-
-    gg.sleep(500)
+    
+    -- Giảm sleep xuống 200ms để nút bấm nhạy hơn (chạm là ăn ngay) thay vì 500ms như cũ
+    gg.sleep(200)
 end
