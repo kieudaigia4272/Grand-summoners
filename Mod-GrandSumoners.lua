@@ -235,7 +235,7 @@ for i = 1, #results do
     local addr = results[i].address
     local valDouble = gg.getValues({{address = addr - 8, flags = gg.TYPE_DOUBLE}})[1].value
     
-    if valDouble > 20000 then
+    if valDouble > 20000 and valDouble < 80000000 then
         -- 3. Đưa vào danh sách ghi
         -- Offset -8 thành -2000 (Double)
         table.insert(edits, {address = addr - 8, flags = gg.TYPE_DOUBLE, value = 100000})
@@ -277,7 +277,7 @@ for i = 1, #results do
     local addr = results[i].address
     local valDouble = gg.getValues({{address = addr - 8, flags = gg.TYPE_DOUBLE}})[1].value
     
-    if valDouble > 20000 then
+    if valDouble > 20000 and valDouble < 80000000 then
         -- 3. Đưa vào danh sách ghi
         -- Offset -8 thành -2000 (Double)
         table.insert(edits, {address = addr - 8, flags = gg.TYPE_DOUBLE, value = -2000})
