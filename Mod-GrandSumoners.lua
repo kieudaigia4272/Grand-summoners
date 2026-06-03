@@ -496,31 +496,33 @@ gg.setVisible(false)
 XGCK = -1 
 
 -- =========================================
--- MAIN LOOP (Tối ưu tương thích - Không dùng hàm lạ)
+-- MAIN LOOP (Tối ưu phản xạ: Nới rộng thời gian 0.8s)
 -- =========================================
 
 gg.setVisible(false) 
 local clickCount = 0
 local lastClickTime = 0
-local timeWindow = 0.4 
+local timeWindow = 0.8 -- Nới rộng lên 0.8s để đại ca bấm thoải mái hơn
 
 while true do
-    -- Dùng gg.isVisible(true) - đây là hàm chuẩn nhất, mọi bản GG đều có
     if gg.isVisible(true) then
-        gg.setVisible(false) -- Ẩn đi ngay lập tức
+        gg.setVisible(false) 
         
         local currentTime = os.clock()
+        -- Nếu khoảng cách giữa 2 lần bấm nhỏ hơn 0.8s thì cộng dồn
         if (currentTime - lastClickTime) < timeWindow then
             clickCount = clickCount + 1
         else
+            -- Lần bấm đầu tiên hoặc bấm lại sau 0.8s
             clickCount = 1
         end
         lastClickTime = currentTime
+        
+        -- Feedback nhanh để đại ca biết máy đã ghi nhận bao nhiêu
     end
     
-    -- Xử lý logic sau khi đã ghi nhận click
+    -- Xử lý chốt lệnh: Đợi 0.8s không thấy bấm thêm thì mới thi hành
     if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
-        -- Dùng if đơn thuần để tránh lỗi gọi hàm lạ
         if clickCount == 1 then
             a2() 
         elseif clickCount == 2 then
@@ -528,8 +530,8 @@ while true do
         elseif clickCount >= 3 then
             Main()
         end
-        clickCount = 0
+        clickCount = 0 -- Reset bộ đếm
     end
     
-    gg.sleep(150) -- Tăng lên 150ms để chắc chắn không bị treo luồng khi máy quá tải
+    gg.sleep(150) -- Sleep vừa đủ để máy không lag
 end
