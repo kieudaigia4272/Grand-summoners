@@ -480,31 +480,6 @@ function a7()
 end
 
 -- =========================================
--- HÀM MENU NỔI (KÍCH HOẠT NHANH)
--- =========================================
-
-function ShowFloatingMenu()
-    local menu = gg.choice({
-        '1. Boost BE + Full Art',
-        '2. instant Win',
-        '3. Kill Boss',
-        '4. 🗄️ Mở Menu Chính (Full Options)',
-        '❌ Đóng'
-    }, nil, '⚡ MENU THAO TÁC NHANH ⚡')
-
-    if menu == 1 then
-        a1()
-    elseif menu == 2 then
-        a2()
-    elseif menu == 3 then
-        a4()
-    elseif menu == 4 then
-        Main()
-    end
-    -- Nếu chọn Đóng (menu == 5) hoặc bấm ra ngoài (menu == nil) thì không làm gì cả, tự thoát
-end
-
--- =========================================
 -- EXIT
 -- =========================================
 
@@ -513,20 +488,49 @@ function Exit()
 end
 
 -- =========================================
--- MAIN LOOP (Tích hợp Floating Menu)
+-- MAIN LOOP (Đa nhiệm Multi-Click - Công tắc vật lý)
 -- =========================================
 
--- Ép ẩn giao diện GG ngay khi vừa load script xong
+-- Ép ẩn giao diện GG ngay khi vừa load script
 gg.setVisible(false)
 XGCK = -1 
 
+-- Khởi tạo biến môi trường cho bộ đếm Click
+local clickCount = 0
+local lastClickTime = 0
+local timeWindow = 0.6 -- Cửa sổ thời gian chờ giữa các lần click (0.6 giây). Nếu đại ca bấm chậm thì tăng lên 0.8
+
 while true do
-    -- Bắt sự kiện khi đại ca chạm vào icon GG đang trôi nổi
+    -- 1. Bắt sự kiện chạm vào icon GG
     if gg.isVisible(true) then
-        gg.setVisible(false) -- Ẩn UI gốc của GG lập tức
-        ShowFloatingMenu()   -- Bắn popup Menu Nhanh ra giữa màn hình
+        gg.setVisible(false) -- Ẩn giao diện đi ngay lập tức để không cản màn hình
+        clickCount = clickCount + 1
+        lastClickTime = os.clock() -- Lưu lại timestamp của lần chạm cuối cùng
     end
     
-    -- Giảm sleep xuống 200ms để nút bấm nhạy hơn (chạm là ăn ngay) thay vì 500ms như cũ
-    gg.sleep(200)
+    -- 2. Kiểm tra bộ đếm (Timeout)
+    -- Nếu đã có click và thời gian trôi qua lớn hơn timeWindow (nghĩa là đã bấm xong)
+    if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
+        
+        -- Phân luồng chức năng dựa trên số lần click
+        if clickCount == 1 then
+            gg.toast("⚡ [1 Click] - Kích hoạt Auto Win!")
+            a2() -- Gọi hàm Instant Win
+            
+        elseif clickCount == 2 then
+            gg.toast("💀 [2 Click] - Kích hoạt Kill Boss!")
+            a4() -- Gọi hàm Kill Boss
+            
+        elseif clickCount >= 3 then
+            gg.toast("🗄️ [3 Click] - Kích hoạt Menu Chính!")
+            Main() -- Bung giao diện Menu tổng
+        end
+        
+        -- 3. Đặt lại bộ đếm về 0 sau khi thực thi xong gói lệnh
+        clickCount = 0
+    end
+    
+    -- 4. Polling rate (Tần số quét)
+    -- Để 50ms là cực nhạy, bắt trọn từng cú nhấp tay mà không làm ngốn CPU
+    gg.sleep(50)
 end
