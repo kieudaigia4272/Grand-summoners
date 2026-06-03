@@ -495,28 +495,31 @@ end
 gg.setVisible(false)
 XGCK = -1 
 
--- Khởi tạo biến môi trường cho bộ đếm Click
+-- =========================================
+-- MAIN LOOP (TỐI ƯU CẤP ĐỘ GỐC - ZERO BLOCKING)
+-- =========================================
+
+gg.setVisible(false) -- Ẩn GG ngay khi bắt đầu
 local clickCount = 0
 local lastClickTime = 0
-local timeWindow = 0.6 -- Cửa sổ thời gian chờ giữa các lần click (0.6 giây). Nếu đại ca bấm chậm thì tăng lên 0.8
+local timeWindow = 0.35 -- Cửa sổ nhận click cực nhanh
 
 while true do
-    -- Kiểm tra trạng thái icon GG
-    if gg.isVisible(true) then
-        gg.setVisible(false) 
+    -- DÙNG gg.isClicked() THAY VÌ gg.isVisible()
+    -- gg.isClicked() là hàm callback, không gây dừng game (block)
+    if gg.isClicked() then 
         local currentTime = os.clock()
-        -- Nếu click mới nằm trong khung thời gian 0.4s thì cộng dồn
         if (currentTime - lastClickTime) < timeWindow then
             clickCount = clickCount + 1
         else
-            -- Nếu bấm lỡ nhịp, reset về 1
             clickCount = 1
         end
         lastClickTime = currentTime
-        -- Phản hồi ngay lập tức qua Toast để đại ca biết máy đã nhận bao nhiêu click
+        
+        -- Chỉ dùng toast khi đã chốt lệnh, không dùng trong lúc đếm
     end
     
-    -- Kiểm tra chốt lệnh: Nếu quá 0.4s mà không có click mới, thực thi
+    -- Chốt lệnh logic
     if clickCount > 0 and (os.clock() - lastClickTime) > timeWindow then
         if clickCount == 1 then
             a2() -- Instant Win
@@ -525,9 +528,9 @@ while true do
         elseif clickCount >= 3 then
             Main() -- Mở Menu
         end
-        clickCount = 0 -- Reset
+        clickCount = 0
     end
     
-    -- Giảm sleep xuống mức tối thiểu mà CPU vẫn chịu được
-    gg.sleep(30) 
+    -- Tăng sleep lên 100ms để CPU game thở, 30ms là quá thừa thãi gây nóng máy
+    gg.sleep(100) 
 end
