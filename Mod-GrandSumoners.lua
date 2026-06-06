@@ -525,9 +525,9 @@ while true do
         isProcessing = true -- Bật khóa, ngăn mọi click khác chen vào
         
         if clickCount == 1 then
-            a1() 
-        elseif clickCount == 2 then
             a4() 
+        elseif clickCount == 2 then
+            a3() 
         elseif clickCount >= 3 then
             Main()
         end
